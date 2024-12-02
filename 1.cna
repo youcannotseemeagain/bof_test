@@ -1,0 +1,46 @@
+sub readbof
+{
+    local('$barch $bof_filename $handle $data $args');
+    $barch  = barch($1);
+
+    # read in the right BOF file
+    $bof_filename = script_resource("$2 $+ . $+ $barch $+ .obj");
+    println("Loading $bof_filename");
+    $handle = openf($bof_filename);
+    $data   = readb($handle, -1);
+    closef($handle);
+    if(strlen($data) == 0)
+    {
+        berror($1, "Could not read BOF file: $bof_filename");
+    }
+
+    btask($1, "Loaded $2 for $barch");
+    return $data;
+}
+
+
+alias bof_test
+{
+    local('$pa $args');
+	
+    if(size(@_) == 2)
+    {
+        $pa = $2;
+    }
+    else
+    {
+        berror($1, beacon_command_detail("bof_test"));
+        return;
+    }
+	
+    $args = bof_pack($1, "z", $pa);
+	
+    beacon_inline_execute($1, readbof($1, "bof_test"), "go", $args);
+
+}
+
+beacon_command_register(
+    "bof_test",
+    "bof_testbof_testbof_testbof_testbof_test",
+	"boftest"
+);
